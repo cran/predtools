@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Model-based ROC</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Model-based ROC</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(predtools)</span></code></pre></div>
+<p>This document provides background information and step-wise tutorial for using the <code>predtools</code> R package for the model-based ROC (mROC) methodology.</p>
+<div id="what-is-mroc" class="section level2">
+<h2>What is mROC?</h2>
+<p>Imagine you have developed a risk prediction model using some development dataset. The risk prediction model takes in some predictors (e.g., sex, age, previous disease history) and returns the risk of an event (e.g., risk of disease relapse in the next 12 months). You would like to evaluate the performance of the risk model in a new (external) validation sample. Among other things, you typically evaluate the Receiver Operating Characteristic (ROC) curve of the risk prediciton model in the new sample.</p>
+<p>Now, model-based ROC (mROC) curve is the ROC curve that should be observed if the prediction model is calibrated in the external population. Comparing the empirical ROC and mROC curves in the new sample can be informative on if the model is calibrated in the new sample.</p>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>You can install the development version from <a href="https://github.com/">GitHub</a> with:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;devtools&quot;)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;resplab/predtools&quot;</span>)</span></code></pre></div>
+</div>
+<div id="how-the-package-works" class="section level2">
+<h2>How the package works</h2>
+<p>The package provides simple functions for mROC-related methods. It also comes with exemplary datasets. Below we provide a step-by-step illustration</p>
+</div>
+<div id="a-step-by-step-guide." class="section level2">
+<h2>A step-by-step guide.</h2>
+<p>Imagine the variable y indicates risk of disease recurrence in a unit of time. We have a prediction model that quantifies this risk given a patient’s age, disease severity level, sex, and whether the patient has comorbidity.</p>
+<p>The package comes with two exemplary datasets. dev_data and val_data. We use the dev_data as the development sample and the val_data as the external validation sample.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(dev_data)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(val_data)</span></code></pre></div>
+<p>dev_data has 500 rows. val_data has 400 rows.</p>
+<p>Here are the first few rows of dev_data:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">age</th>
+<th align="right">severity</th>
+<th align="right">sex</th>
+<th align="right">comorbidity</th>
+<th align="right">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">55</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">52</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">63</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">61</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">58</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">54</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">45</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>We use the development data to fit a logistic regression model as our risk prediction model:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>reg<span class="ot">&lt;-</span><span class="fu">glm</span>(y<span class="sc">~</span>sex<span class="sc">+</span>age<span class="sc">+</span>severity<span class="sc">+</span>comorbidity,<span class="at">data=</span>dev_data,<span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">&quot;logit&quot;</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(reg)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; glm(formula = y ~ sex + age + severity + comorbidity, family = binomial(link = &quot;logit&quot;), </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     data = dev_data)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Deviance Residuals: </span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -1.2904  -0.8272  -0.6373   1.1570   2.1050  </span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) -1.728929   0.565066  -3.060  0.00222 ** </span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sex          0.557178   0.223631   2.492  0.01272 *  </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; age          0.005175   0.010654   0.486  0.62717    </span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; severity    -0.557335   0.227587  -2.449  0.01433 *  </span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; comorbidity  1.091936   0.209944   5.201 1.98e-07 ***</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     Null deviance: 602.15  on 499  degrees of freedom</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual deviance: 560.41  on 495  degrees of freedom</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; AIC: 570.41</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Number of Fisher Scoring iterations: 4</span></span></code></pre></div>
+<p>Given this, our risk prediction model can be written as:</p>
+<p><span class="math inline">\(\bf{ logit(p)=-1.7289+0.5572*sex+0.0052*age-0.5573*severity+1.0919*comorbidity}\)</span>.</p>
+<p>First, let’s compare the ROC and mROC in the development data</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pred<span class="ot">&lt;-</span><span class="fu">predict.glm</span>(reg, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Type &#39;citation(&quot;pROC&quot;)&#39; for a citation.</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;pROC&#39;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     cov, smooth, var</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>dev_roc<span class="ot">&lt;-</span><span class="fu">roc</span>(<span class="at">response=</span>dev_data[,<span class="st">&#39;y&#39;</span>], <span class="at">predictor=</span>pred)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Setting levels: control = 0, case = 1</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Setting direction: controls &lt; cases</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dev_roc)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">&quot;ROC in the development dataset&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAzFBMVEUAAAAAADoAAGYAOjoAOmYAOpAARHkAZpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kJA6kLY6kNtmAABmADpmOgBmOjpmkJBmkLZmkNtmtttmtv95RACQOgCQOjqQZgCQZjqQkDqQkGaQkLaQtpCQttuQ27aQ29uQ2/+pqam2ZgC2Zjq2ZpC2kDq2kGa227a229u22/+2/7a2/9u2///bkDrbkGbbtmbbtpDb27bb2//b////tmb/25D/27b//7b//9v///8Mt7CUAAAACXBIWXMAAA7DAAAOwwHHb6hkAAANXElEQVR4nO2dCXvbuBGGacdurW2Sblo76RHXbXqkjZRuu94NN9mKisX//5+KgyDBAxycxFCa73k2a4IABnoFDE6RRU2aVZG7ANhFgAARIEAECBABAkSAABEgQAQIEAECRIAAESBABAgQAQJEgAARIEAECBABAkSAABEgQAQIEAECRIAAESBABAgQAQJEgAARIEAECBABAkSAABEgQAQI0BDQ8aEQunj5KK8/v2BXL9/vm9ufn/PLRy369X4i2+O/P9V1WVx8AMzvistPYBlNRhwlyjRrfBSjNgMq5Id7etNcXYmk7eXtfNm/vrlEB0iWac74OEY9B6i46V3xImqX97OFkaZxARqbGoZMFmYCkCjMYcP/X7KK9JZdftmISsMur94z0g+FKrGMzkj86yO7p3DsOMLLT73gI/vr4lX3OY8fNywzWab2XlPESnwBbagq05ffFcWzP+zlR/kvu7hiTf3prrj58pwVs/5pMzKllaAp09j4F94qXmox2oC6/ok5FAMgFv16zy6aOiB4sUtp4fjnV//To5d6q9QBSfFE7HN0LbXWKiO72d2TZIRtLbQpU9lV5V1nsIlWFM8nTGkF0wHpxqthjC5AJp+rQfzb0aqfdtmPXoovs+xck2pixbUKZiGPPFMVgxXjZs+/ahaxu8eyuxGfsJdCGmnrtLjHb37mboDjuOV/Fm/HpvSCaQ1IM87y/uW+iS1iaAH88+5nfNCt/oG4P9EuR4DuBVMdZ90Ei48rPzMLUYXcqS9bcG/vNf/ImqFCpZHmA+4k0qamidSyul13H0vLriuYBkgzzi9//s/zohejCWDprr43A7rZOwDiFZIDL9aireJ0fCcDWkBdgGRhAMSdcd1rYhcfZppYC6hfg1Swaumtm1JZ7bpGL+7xNia/By1UGFEphJvSnLkMl/+KlHp2Wgm0GsSuf1E0xvnnvfr7z10MPeDrm0lAzBt/13brBif97aMbIJb+fmSmidi7x1rGX0UyLVSWqUlRSn8qClK235oGSM9uGhDPquiM3/Zi6AEM0d8MTroUdU5188fPYDcPABpVvr4P6u6x8snMtVDIB/UB6dlNA6r/VFwWjfFKeSnlpPUALlMvJouguWzRPEcDRQOgsukl9eKxkcrXu3bEJzuSXdOLafd2KvMuFOrF+oD07PQSdMPWLW+FjXGRK//GVQwtgEX77VQvprp58RW3Uw3RptrLV73oI0BV0QwU2+I1g5NuaL3rwPfuVWq00oWax0Ey8QCQlp1eAlkmViO2evr2O1cxftQCPk47aTVQFDX1yIevxYu3/cnq9/3oajzWZsfHGFePevHqr+9Y4/n2sTP03aZ49lbWe/1e10La0N5I+o+ycJc/vpM3x4C07PQSHD92ReROtjHOO62r92JQIEutBdSfxyPpQC20emI1hRtL+wqtC3pOgDidrfrbOpG7nQWzM8kHkKg+2/bKOpmrnUWzM8kDUKHXn5MH5CHufLbapXW6yMWIm10sFYP6Q4A0tSOQbS/UOnnk0sTNLkzd6IwXa9u/Z51J5DLFzc5TRU8ybDuIYp1XzILhADREI7QdRrLOLU6hEmXnan2CjNSQzzkCmqw4jUZ8zg+QCY3QmM/ZAZqhM8nn3ADN4Znkc16AZqvPNJ+zAuTD58wAzdw08CFAjUx8CJCUkU8qQHwlX+wDmI4HZQDkxScRoFLs34lNhOEmvU92cWQGNMMnDaDjA98zF9tXpeHIFyZAc3zSAHq6Yy2rkscGDGvCiADN8jmfGmQcA83zSe2DBKrg7EJlnLzXIJ/T78Vm1ja4ID4nPg6ah1Nb8DllQBCc2oZPckBltl4MpGPFZ+kaNLfcGVcWJmz4nGwTi8XnJAHZVVE7PqkAqQNrxrMVyQDZNmFLPqkGiuroZzU6Ue6TnYNs/Zstn4RTDamlpxqW3t+aT8LJqtTSk1U7QPZ8TqoGWY8fHPgk80FNFVrSByXhk6oXU79eM/5CMgkgu3hOfE5lHOQwOnfjcxqAXKYvjnxCAE38KiyBXSAb16mdK5+wGsR/emFwwtHszufiOvN15hPcxHwZRQHkvCjgzieCDyrnplzhdufyWIBPKKBKLDsfH5wfeBAHkFt8Hz5BgPhgR5IxTSgi2J3Lwy0TLz5hvRj4xI0IdmeycAPkxycI0GvJx736uNg15+AGyJNPDECmdfk4do0ZLFJ/AgDt2jFanm5+IT4xalBau6b0i7SverVzMTcHFMBnjYCc99VC+HgDerq7bZ9YtKyTXpbPCmvQIuNnzVz0iImzc52ABfIJG0n7LweFAHKKHsonqAbxoZDvbMMX0NJ8YszmvdYVPQEtNX7WLAZHPD4s14st2n81JsMiutagoPNBrsli8AkBJE5wLOiDlh3/tFb9Iy7diy3un6XV6BFTZZejfdXrAuQSOxafFc3FMvgfYTZ6xFTZLbW+MTTrH3HJNenU+6czlv0jLrgmnY/POtakc4x/Wtv+EZdbk87IZw1Oern150nr0SPGzi4vnxWMg3K2r3oFNShv/UEPKGP/rkoQEJE/NaCcOeobbNdxgSMFn7A16ev9YXNT71ItuWZZ/xkVwj8i/0VGVdynm2pkmr8PCuEfkQPa8Zd2JAKEof4ENrGbpzv+HotETQwFn9AzivxlH2Y+h43x5VmRASXjk6abb4eQ5lEknB0OPonGQc2voIJqUObxT1uMgIgzv9zlzikMEBI+YU56rvvaiZeXLAEoKZ+wbn52pawsbgMAYeETOg6a02HzbAFAifmEbT0DAyDmo3wBoeET5IMq4B2h/natB9HJ+YQ1MYsFM7/H4+Dhs/R6kOXxlzS/z/USygUzRHzCAIl3cu68frU6Z9fSAy3CJ8xJX3wo+Wx+glDQ43Ew8Qnr5m/Fozkm/HDY43HiP18iQIEDRQ5ovKIY9nATVHxi1KDdiEHQ43GsPNBifCL4oHI8XAypQcj4BPdi0+dc/R+PY7WTsSCfVOMg38fjYKs/6AaK6PgEADps5Ku6/Y6ST9vFx8cfkFgM4/P5mVUxZ7vI/A+XNyCx4SwWXSNuPcd7PmQ0BZwPUktm8baeEfIJAHSvVqUXBLQ8nzBA0v2YxoLudmM8/zm2gnxQyXswcGna3i4AKAcff0BsniF3B2d3x9zsBj9fPYH8x0GVGCcfNl4HzDwA5eGDayTt9X6rxFoLoFx81gIoG5+VAMrHBxUgjHxWASgnnzUAyspnBYDy8sEECCUf9IBy88EDaHo7IzsfNMdfsPJBU4Nwtq8aNyAMfDADQsEHMSAcfPACQsIHC6BRH4aFDx5A/Ws0fJACwsMHJyBEfFACwsQHIyBUfBACwsUHCSCtl0fGBwcgxHywAFJ/oeODDBA+PrgAIeSDAVC7mIiRDwJAuPnkB1Rgbl91fkDY+aQCZPuLQ/R8EgGy/sUhej5pANn/Xgy1fxZKAsj+F4cSEGI+mWuQdEGY+STzQXa/OMTPJ1UvZvmLQw4IN5/M4yAGCDmfvIBYFcPOJzmg2cfjrIBP3vNBXu+IWlhZmxj++pMX0Br45JysroJPxsnqOvjkm2qshE+2yeq2WItSALKoQXaZAvfDbocmD4kOT1btMj1ZQPBk1S7T0wUUKVMCFHafABGgsPsEiACF3T99QKckAgSIAAEiQIAIECACBIgAASJAgAgQIAIEiAABIkCACBCguIAOv2p3g9yf2d1LcdgUhduzUvXkYgfY69UyI0UF9HTXbpdVrLCVE6Feiup6X7u96VVPfnxgf5SOgA2KCajqNu3lFprLM7t7KeSFy7uCe8mbxxl7PY12qIiAquK23XB1L2IvxeEb1yfqTxh0q8AmxfVBHSDxCV2e2d1LUV3+cOfmRCYM+j3PeKhEgOS35/Id9lKUvK06PdF6bBDY/bUVUkAXrhVwZLCK46ORNjHpS1zeXDE0GKn+pAMU5qRlPi6uemCwjMUnFaDAbl6eRHKpgH2DE6+28lUiQKEDRX7+SDuO5JhcvH4nkhIAkr1P6TzVaFI0rz1xnitoyUt5SAfhOOgERYAAESBABAgQAQJEgAARIEAECBABAkSAABEgQAQIEAECRIAAESBABAgQAQKUH5D4kd786rNYoi6L4jfdj2ZlWBVt6dmo7IAqsb6+A5dH5fuVh2FnAEhuRMC7qFMwzgGQRubwzT82zUp9WWh/3HAQ/LzQ5Q8CSC/s+i9ihyDOLuqUcgPStojZ572XLY7vPIutG/4Ha1u8pqj/hmGV2MVPV5OyAxJnyZqdZnEo6Hrfvs5d+R0d0FSY+2kZe+UHVIsTc6LOiO3Uiw9y/49dqs35HoxBGHdiXm9+txQKQLU4zNOcP2CAmqdH3KuaMVVbWkCspu3ibaSOlBuQqhCMSwdI9flWNejp9T9fp2th2QGpXozVA+mDdtwHNT7XxgexHF4kbGHZAbFui388fpznsOHnD1QvJsaO/A+GcNSLtWHCrUc76jKl7IDkVIMTOWx+zzo0UXlKNftoxzwdIC2s3nG6KfswDIBauRwo66X7dcIWdgqAypQtbP2ADpuULhoVIJwiQIAIECACBIgAASJAgAgQIAIEiAABIkCACBAgAgTo/8KSEkxSwoT9AAAAAElFTkSuQmCC" /><!-- --></p>
+<p>And now the much-awaited mROC using these data. Note that we use the line function to add the mROC on top</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dev_mroc<span class="ot">&lt;-</span><span class="fu">mROC</span>(<span class="at">p=</span>pred)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dev_roc)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(dev_mroc, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div id="important-note-the-statistical-inference-on-comparing-mroc-and-roc-cannot-be-used-for-internal-validation.-such-a-test-is-made-for-external-validation." class="section level3">
+<h3>Important note: the statistical inference on comparing mROC and ROC cannot be used for internal validation. Such a test is made for external validation.</h3>
+<p>Now lets calculate the predicted probabilities for each subject in the validation dataset given the prediction equation.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pred<span class="ot">&lt;-</span><span class="fu">predict.glm</span>(reg,<span class="at">newdata =</span> val_data, <span class="at">type=</span><span class="st">&quot;response&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pred)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.1008  0.1853  0.2794  0.2891  0.4053  0.5714</span></span></code></pre></div>
+<p>Using the package pROC, let’s draw the validation ROC curve</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>val_roc<span class="ot">&lt;-</span><span class="fu">roc</span>(<span class="at">response=</span>val_data[,<span class="st">&#39;y&#39;</span>], <span class="at">predictor=</span>pred)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Setting levels: control = 0, case = 1</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Setting direction: controls &lt; cases</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(val_roc)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>And now the much-awaited mROC using these data. Note that we use the line function to add the mROC on top</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>val_mroc<span class="ot">&lt;-</span><span class="fu">mROC</span>(<span class="at">p=</span>pred)</span></code></pre></div>
+<p>Notice that the mROC function only requires the vector of predicted probabilities.</p>
+<p>To compare the ROC and mROC plots, we juxtapose them next to each other:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(val_roc)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(val_mroc, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Here, it is obvious that the mROC and ROC curve are not compatible, indicating that the model is not calibrated.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>res<span class="ot">&lt;-</span><span class="fu">mROC_inference</span>(val_data[,<span class="st">&#39;y&#39;</span>],pred)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>res</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Mean calibration statistic (A):0.00835868(Obs&gt;Pred) (p:0.72496)</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mROC/ROC equality statsitic (B):0.05910898 (p:0.04707)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Unified statistic:6.786745 (df:4.011603,p:0.1485229)</span></span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
